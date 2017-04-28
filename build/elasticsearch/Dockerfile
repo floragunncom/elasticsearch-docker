@@ -1,5 +1,9 @@
 FROM docker.elastic.co/elasticsearch/elasticsearch-alpine-base:latest
-MAINTAINER floragunn GmbH <info@floragunn.com>
+
+RUN apk update && \
+    apk upgrade && \
+    apk add apr && \
+    rm -rf /var/cache/apk/*
 
 ARG ELASTIC_VERSION
 ARG ES_DOWNLOAD_URL
@@ -33,6 +37,8 @@ RUN curl -sS -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/flor
 COPY elasticsearch.yml config/
 COPY log4j2.properties config/
 COPY bin/es-docker bin/es-docker
+COPY tcnative-alpine/netty-tcnative-openssl-static-1.1.33.Fork25-linux-x86_64.jar /usr/share/elasticsearch/plugins/search-guard-5/
+
 
 USER root
 RUN chown elasticsearch:elasticsearch config/elasticsearch.yml config/log4j2.properties bin/es-docker && \

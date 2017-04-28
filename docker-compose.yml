@@ -92,6 +92,14 @@ services:
       - elasticsearch1:elasticsearch
     volumes:
       - $PWD/tests:/home/testuser/tests:ro
+  netty-tcnative-alpine:
+    image: "netty-tcnative-alpine:latest"
+    build:
+      context: build/netty-tcnative-alpine
+      args:
+        - NETTY_TCNATIVE_TAG=netty-tcnative-parent-1.1.33.Fork25
+    volumes:
+      - $PWD/build/netty-tcnative-alpine/binaries:/output:rw
 volumes:
   esdata1:
     driver: local

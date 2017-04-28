@@ -38,14 +38,17 @@ pull-latest-baseimage:
 clean:
 	docker-compose down -v && docker-compose rm -f -v
 
-run-es-single: pull-latest-baseimage
+run-es-single: pull-latest-baseimage clean
 	ES_NODE_COUNT=1 docker-compose -f docker-compose.yml -f docker-compose.hostports.yml up --build elasticsearch1
 
-run-es-cluster: pull-latest-baseimage
+run-es-cluster: pull-latest-baseimage clean
 	ES_NODE_COUNT=2 docker-compose -f docker-compose.yml -f docker-compose.hostports.yml up --build elasticsearch1 elasticsearch2
 	
-run-sgadmin: pull-latest-baseimage
+run-sgadmin: pull-latest-baseimage clean
 	docker-compose -f docker-compose.yml -f docker-compose.hostports.yml up --build sgadmin
+	
+run-netty-tcnative-alpine: clean
+	docker-compose -f docker-compose.yml -f docker-compose.hostports.yml up --build netty-tcnative-alpine
 
 single-node-test: export ES_NODE_COUNT=1
 single-node-test: pull-latest-baseimage clean
