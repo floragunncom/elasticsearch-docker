@@ -1,5 +1,5 @@
 FROM docker.elastic.co/elasticsearch/elasticsearch-alpine-base:latest
-MAINTAINER Elastic Docker Team <docker@elastic.co>
+MAINTAINER floragunn GmbH <info@floragunn.com>
 
 ARG ELASTIC_VERSION
 ARG ES_DOWNLOAD_URL
@@ -27,8 +27,8 @@ RUN set -ex && for esdirs in config data logs; do \
 
 USER elasticsearch
 
-# Install xpack
-RUN eval ${ES_JAVA_OPTS:-} elasticsearch-plugin install --batch x-pack
+# Install Search Guard
+RUN curl -sS -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/floragunncom/installer/next/sginstall.sh?abc | bash -s -- -vnc
 
 COPY elasticsearch.yml config/
 COPY log4j2.properties config/

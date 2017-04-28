@@ -1,12 +1,7 @@
 from __future__ import print_function
-from es_acceptance import docker_stack, docker_xpack_stack_uninitialized
-from es_acceptance import cluster_health, query_all, delete_index, create_index, wait_for_cluster_health, change_default_elastic_password, os_stats
+from es_acceptance import docker_stack, docker_sg_stack_uninitialized
+from es_acceptance import cluster_health, query_all, delete_index, create_index, wait_for_cluster_health, os_stats
 from pytest import fixture
-
-# change default x-pack password; cluster state should be yellow after that
-def test_password_change(docker_xpack_stack_uninitialized):
-    status = change_default_elastic_password()
-    assert 200 == status
 
 
 def test_create_basic_index(docker_stack):

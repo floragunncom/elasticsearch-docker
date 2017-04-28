@@ -1,11 +1,11 @@
 from __future__ import print_function
-from es_acceptance import docker_stack, docker_stack_uninitialized
+from es_acceptance import docker_stack, docker_sg_stack_uninitialized
 from es_acceptance import cluster_health, query_all, delete_index, create_index, wait_for_cluster_health
 from pytest import fixture
 
 
 # state should be green on first run regardless of no. of nodes
-def test_cluster_health(docker_stack_uninitialized):
+def test_cluster_health(docker_sg_stack_uninitialized):
     health = cluster_health()
     assert "green" == health['status']
 

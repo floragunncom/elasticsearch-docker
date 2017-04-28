@@ -15,6 +15,10 @@ services:
       - IPC_LOCK
     environment:
       - discovery.zen.minimum_master_nodes=${ES_NODE_COUNT}
+      - searchguard.ssl.transport.keystore_filepath=demo_certs/keystore.jks
+      - searchguard.ssl.transport.truststore_filepath=demo_certs/truststore.jks
+      - searchguard.ssl.transport.enforce_hostname_verification=false
+      - searchguard.authcz.admin_dn.0=CN=kirk,OU=client,O=client,L=test,C=de  
     image: "${VERSIONED_IMAGE}"
     mem_limit: 4g
     networks:
@@ -30,6 +34,7 @@ services:
         hard: 65536
     volumes:
       - esdata1:/usr/share/elasticsearch/data
+      - $PWD/demo_certs/:/usr/share/elasticsearch/config/demo_certs:ro
   elasticsearch2:
     build:
       context: build/elasticsearch
@@ -42,6 +47,10 @@ services:
     environment:
       - discovery.zen.ping.unicast.hosts=elasticsearch1
       - discovery.zen.minimum_master_nodes=${ES_NODE_COUNT}
+      - searchguard.ssl.transport.keystore_filepath=demo_certs/keystore.jks
+      - searchguard.ssl.transport.truststore_filepath=demo_certs/truststore.jks
+      - searchguard.ssl.transport.enforce_hostname_verification=false
+      - searchguard.authcz.admin_dn.0=CN=kirk,OU=client,O=client,L=test,C=de 
     image: "${VERSIONED_IMAGE}"
     mem_limit: 4g
     networks:
@@ -55,10 +64,27 @@ services:
         hard: 65536
     volumes:
       - esdata2:/usr/share/elasticsearch/data
+      - $PWD/demo_certs/:/usr/share/elasticsearch/config/demo_certs:ro
+  sgadmin:
+    build:
+      context: build/sgadmin
+      args:
+        ELASTIC_VERSION: "${ELASTIC_VERSION}"
+        SG_VERSION: "${SG_VERSION}"
+        ES_JAVA_OPTS: "${ES_JAVA_OPTS}"
+    image: "${VERSIONED_IMAGE}-sgadmin"
+    mem_limit: 128m
+    networks:
+      - esnet
+    volumes:
+      - $PWD/demo_certs/:/demo_certs:ro
+    command: -ts /demo_certs/truststore.jks -ks /demo_certs/keystore.jks -h elasticsearch -nhnv -cn docker-cluster -cd /usr/share/sgadmin/sgconfig
+    links:
+      - elasticsearch1:elasticsearch
   tester:
     build:
       context: build/python
-    command: py.test -p no:cacheprovider tests/test_xpack_basic_index_crud.py
+    command: py.test -p no:cacheprovider tests/
     image: "tester:latest"
     networks:
       - esnet

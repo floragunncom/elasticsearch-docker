@@ -11,9 +11,9 @@ class DockerStackError(Exception):
 class SecurityError(Exception):
     pass
 
-admin_username = 'elastic'
-admin_defaultpwd = 'changeme'
-admin_newpwd = 'testpassword'
+admin_username = 'admin'
+admin_defaultpwd = 'admin'
+admin_newpwd = 'admin'
 
 
 def cluster_health():
@@ -67,14 +67,11 @@ def wait_for_cluster_health(desired_state):
 
 
 @retry(stop_max_attempt_number=8, wait_exponential_multiplier=400, wait_exponential_max=60000)
-def wait_for_elasticsearch(xpack=False, admin_username = admin_username, admin_pwd = admin_defaultpwd):
+def wait_for_elasticsearch(admin_username = admin_username, admin_pwd = admin_defaultpwd):
     try:
-        if xpack is True:
-            reply = requests.get(
-                "http://elasticsearch:9200/_cluster/health",
-                auth=HTTPBasicAuth(admin_username, admin_pwd))
-        else:
-            reply = requests.get('http://elasticsearch:9200')
+		reply = requests.get(
+			"http://elasticsearch:9200/_cluster/health",
+			auth=HTTPBasicAuth(admin_username, admin_pwd))
     except requests.ConnectionError:
         raise DockerStackError("Elasticsearch is not answering.")
 
@@ -89,33 +86,14 @@ def wait_for_elasticsearch(xpack=False, admin_username = admin_username, admin_p
             "Elasticsearch cluster has the wrong name: '{}'.".format(cluster_name))
 
 
-def change_default_elastic_password():
-    reply = requests.put('http://elasticsearch:9200/_xpack/security/user/{}/_password'.format(admin_username),
-                         json={"password": admin_newpwd},
-                         auth=HTTPBasicAuth(admin_username, admin_defaultpwd))
-
-    status = reply.status_code
-
-    if status != 200:
-        raise SecurityError("Elasticsearch returned HTTP {} while trying to change default password.".format(status))
-
-    return status
-
-
 def setup_elasticsearch():
     delete_index()  # Ensure a clean start
     create_index()
 
-
 @fixture
-def docker_stack_uninitialized():
+def docker_sg_stack_uninitialized():
     """Ensure the Docker stack is up and available for testing without data"""
     wait_for_elasticsearch()
-
-@fixture
-def docker_xpack_stack_uninitialized():
-    """Ensure the Docker stack is up and available for testing without data"""
-    wait_for_elasticsearch(xpack=True)
 
 
 @fixture
