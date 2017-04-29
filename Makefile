@@ -55,7 +55,7 @@ single-node-test: pull-latest-baseimage clean
 	docker-compose up -d --build elasticsearch1
 	docker-compose build --pull tester
 	docker-compose build --pull sgadmin
-	sleep 10
+	sleep 20
 	docker-compose run sgadmin
 	docker-compose run tester
 	docker-compose down -v
@@ -65,7 +65,7 @@ cluster-unicast-test: pull-latest-baseimage clean
 	docker-compose up -d --build elasticsearch1 elasticsearch2
 	docker-compose build --pull tester
 	docker-compose build --pull sgadmin
-	sleep 10
+	sleep 20
 	docker-compose run sgadmin
 	docker-compose run tester
 	docker-compose down -v

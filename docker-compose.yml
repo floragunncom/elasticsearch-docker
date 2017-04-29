@@ -20,7 +20,7 @@ services:
       - searchguard.ssl.transport.enforce_hostname_verification=false
       - searchguard.authcz.admin_dn.0=CN=kirk,OU=client,O=client,L=test,C=de  
     image: "${VERSIONED_IMAGE}"
-    mem_limit: 4g
+    mem_limit: 2g
     networks:
       esnet:
         aliases:
@@ -52,7 +52,7 @@ services:
       - searchguard.ssl.transport.enforce_hostname_verification=false
       - searchguard.authcz.admin_dn.0=CN=kirk,OU=client,O=client,L=test,C=de 
     image: "${VERSIONED_IMAGE}"
-    mem_limit: 4g
+    mem_limit: 2g
     networks:
       - esnet
     ulimits:
